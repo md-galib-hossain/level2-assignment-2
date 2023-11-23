@@ -4,7 +4,7 @@ import { UserModel } from "./user.model";
 
  const createUserIntoDB = async (user : User)=>{
 
-   const result = (await UserModel.create(user)) //notun data pathabe
+   const result = await UserModel.create(user) //notun data pathabe
   
 
    return result;
