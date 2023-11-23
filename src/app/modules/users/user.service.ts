@@ -15,10 +15,21 @@ const getAllUsersFromDB = async () =>{
 const result = await UserModel.find({}).select('-_id username fullName age email address')
 return result
 }
+//getSingleUserFromDB start
 const getSingleUserFromDB = async (userId : string) =>{
-const result = await UserModel.findOne({userId})
+
+try{
+  if(await UserModel.isUserExists(userId)){
+    const result = await UserModel.findOne({userId})
 return result
+
+}else{
+  return null
 }
+}catch(err){
+  console.log(err)
+}}
+//end getSingleUserFromDB
 
 export const UserServices = {
     createUserIntoDB,getAllUsersFromDB,getSingleUserFromDB

@@ -1,38 +1,26 @@
 import { Request, Response } from "express";
 import { UserServices } from "./user.service";
-import Joi from "joi";
+import JoivalidationSchema from "./user.validation";
 
 //creating user
 const createUser = async (req: Request, res: Response) => {
   try {
-    //joi schema validation
-    const JoivalidationSchema = Joi.object({
-      userId: Joi.number().required(),
-      username: Joi.string().required(),
-      password: Joi.string().required(),
-      fullName: Joi.object({
-        firstName: Joi.string().required(),
-        lastName: Joi.string().required(),
-      }).required(),
-      age: Joi.number().required(),
-      email: Joi.string().email().required(),
-      isActive: Joi.boolean().required(),
-      hobbies: Joi.array().items(Joi.string()).required(),
-      address: Joi.object({
-        street: Joi.string().required(),
-        city: Joi.string().required(),
-        country: Joi.string().required(),
-      }).required(),
-      orders: Joi.array().items({
-        productName: Joi.string().required(),
-        price: Joi.number().required(),
-        quantity: Joi.number().required(),
-      }),
-    });
-
     const user = req.body;
+    //validating data using Joi
+    const { error } = JoivalidationSchema.validate(user);
+
     //calling service function to send the user data from body
+
+    if (error) {
+       
+        return res.status(500).json({
+            success: false,
+            message: "Validation error",
+            error: error.details,
+          });
+    }
     const result = await UserServices.createUserIntoDB(user);
+
 
     //send response
     res.status(200).json({
@@ -70,12 +58,20 @@ const getSingleUser = async (req: Request, res: Response) => {
   const { userId } = req.params;
   try {
     const result = await UserServices.getSingleUserFromDB(userId);
-    //send response
-    res.status(200).json({
-      success: true,
-      message: "User is retrieved succesfully",
-      data: result,
-    });
+
+   if (!result) {
+      // If the user is not found, respond with a 404 status code
+      return res.status(500).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+      
+       res.status(200).json({
+        success: true,
+        message: "User is retrieved successfully",
+        data: result,
+      });
   } catch (err) {
     console.log(err);
   }
