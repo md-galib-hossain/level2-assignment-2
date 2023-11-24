@@ -6,6 +6,7 @@ import JoivalidationSchema from "./user.validation";
 const createUser = async (req: Request, res: Response) => {
   try {
     const user = req.body;
+    
     //validating data using Joi
     const { error } = JoivalidationSchema.validate(user);
 
@@ -22,17 +23,18 @@ const createUser = async (req: Request, res: Response) => {
     const result = await UserServices.createUserIntoDB(user);
 
 
+
+
     //send response
     res.status(200).json({
       success: true,
-      message: "User is created succesfully",
+      message: "User created successfully!",
       data: result,
     });
-  } catch (err) {
+  } catch (err : any) {
     res.status(500).json({
       success: false,
-      message: "Something wen wrong",
-      error: err,
+      message: err.message || 'something went wrong',
     });
   }
 };
@@ -60,16 +62,20 @@ const getSingleUser = async (req: Request, res: Response) => {
     const result = await UserServices.getSingleUserFromDB(userId);
 
    if (!result) {
-      // If the user is not found, respond with a 404 status code
+      // If the user is not found then will show message : not found
       return res.status(500).json({
-        success: false,
-        message: "User not found",
-      });
+        "success": false,
+        "message": "User not found",
+        "error": {
+            "code": 404,
+            "description": "User not found!"
+        }
+    });
     }
       
        res.status(200).json({
         success: true,
-        message: "User is retrieved successfully",
+        message: "User fetched successfully!",
         data: result,
       });
   } catch (err) {
@@ -77,8 +83,81 @@ const getSingleUser = async (req: Request, res: Response) => {
   }
 };
 
+
+//update single user
+const updateSingleUser = async (req: Request, res: Response) => {
+  const { userId } = req.params
+  const user = req.body
+  try {
+ //validating data using Joi
+ const { error } = JoivalidationSchema.validate(user);
+ if (error) {
+    
+     return res.status(500).json({
+         success: false,
+         message: "Validation error",
+         error: error.details,
+       });
+ }
+
+    const result = await UserServices.updateSingleUserFromDB(userId , user);
+
+   if (!result) {
+      // If the user is not found then will show message : not found
+      return res.status(500).json({
+        "success": false,
+        "message": "User not found",
+        "error": {
+            "code": 404,
+            "description": "User not found!"
+        }
+    });
+    }
+      
+       res.status(200).json({
+        success: true,
+        message: "User Updated successfully!",
+        data: result,
+      });
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+//delete single user
+const deleteSingleUser = async (req: Request, res: Response) => {
+  const { userId } = req.params
+  try {
+    const result = await UserServices.deleteSingleUserFromDB(userId);
+
+   if (!result) {
+      // If the user is not found then will show message : not found
+      return res.status(500).json({
+        "success": false,
+        "message": "User not found",
+        "error": {
+            "code": 404,
+            "description": "User not found!"
+        }
+    });
+    }
+      
+       res.status(200).json({
+        success: true,
+        message: "User Updated successfully!",
+        data: null,
+      });
+  } catch (err) {
+    console.log(err);
+  }
+
+
+
+}
+
 export const UserControllers = {
   createUser,
   getAllUsers,
   getSingleUser,
+  updateSingleUser,deleteSingleUser
 };
