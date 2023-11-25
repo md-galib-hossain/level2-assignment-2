@@ -17,9 +17,15 @@ const createUserIntoDB = async (user: User) => {
 };
 
 const getAllUsersFromDB = async () => {
-  const result = await UserModel.find({}).select(
-    "-_id -orders._id username fullName age email address"
-  );
+  const result = await UserModel.find({}, {
+    username: 1,
+   _id:0,
+    fullName: 1,
+    age: 1,
+    email: 1,
+    address: 1,
+   
+  });
   return result;
 };
 //getSingleUserFromDB start
