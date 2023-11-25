@@ -34,6 +34,7 @@ userSchema.statics.isUserExists = async function (userId: string) {
 
   return existingUser;
 };
+
 //pre save middleware
 userSchema.pre("save",async function (next) {
   //hashing password and save ot db

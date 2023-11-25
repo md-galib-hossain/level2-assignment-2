@@ -18,7 +18,7 @@ const createUserIntoDB = async (user: User) => {
 
 const getAllUsersFromDB = async () => {
   const result = await UserModel.find({}).select(
-    "-_id username fullName age email address"
+    "-_id -orders._id username fullName age email address"
   );
   return result;
 };
@@ -26,7 +26,7 @@ const getAllUsersFromDB = async () => {
 const getSingleUserFromDB = async (userId: string) => {
   try {
     if (await UserModel.isUserExists(userId)) {
-      const result = await UserModel.findOne({ userId }).select("-password");
+      const result = await UserModel.findOne({ userId }).select("-password -_id -orders._id");
       return result;
     } else {
       return null;
@@ -70,10 +70,32 @@ const deleteSingleUserFromDB = async (userId : string) =>{
   }
 }
 
+// add new product
+const addNewProductToDB = async (userId : string,product : User["orders"]) =>{
+
+  try {
+    if (await UserModel.isUserExists(userId)) {
+      const result = await UserModel.updateOne(
+        { userId: userId },
+        {
+          $push: {
+            orders: product
+          }
+        }
+      );
+      return result;
+    } else {
+      return null;
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 export const UserServices = {
   createUserIntoDB,
   getAllUsersFromDB,
   getSingleUserFromDB,
   updateSingleUserFromDB,
-  deleteSingleUserFromDB
+  deleteSingleUserFromDB,addNewProductToDB
 };

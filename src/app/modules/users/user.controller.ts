@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { UserServices } from "./user.service";
-import JoivalidationSchema from "./user.validation";
+import JoivalidationSchema, { Joivalidationforproduct } from "./user.validation";
 
 //creating user
 const createUser = async (req: Request, res: Response) => {
@@ -151,13 +151,55 @@ const deleteSingleUser = async (req: Request, res: Response) => {
     console.log(err);
   }
 
+}
+
+
+// adding product
+const addSingleProduct = async (req: Request, res: Response) => {
+  const { userId } = req.params
+  const  product  = req.body
+console.log(product)
+  try {
+     //validating data using Joi
+ const { error } = Joivalidationforproduct.validate(product);
+ if (error) {
+     return res.status(500).json({
+         success: false,
+         message: "Product structure is not valid",
+         error: error.details,
+       });
+ }
+
+    const result = await UserServices.addNewProductToDB(userId,product);
+
+   if (!result) {
+      return res.status(500).json({
+        "success": false,
+        "message": "User not found",
+        "error": {
+            "code": 404,
+            "description": "User not found!"
+        }
+    });
+    }
+      
+       res.status(200).json({
+        success: true,
+        message: "Order created successfully!",
+        data: null,
+      });
+  } catch (err) {
+    console.log(err);
+  }
+
 
 
 }
+
 
 export const UserControllers = {
   createUser,
   getAllUsers,
   getSingleUser,
-  updateSingleUser,deleteSingleUser
+  updateSingleUser,deleteSingleUser,addSingleProduct
 };

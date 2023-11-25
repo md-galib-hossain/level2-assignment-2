@@ -24,4 +24,12 @@ import Joi from "joi";
           quantity: Joi.number().required(),
         }),
       });
+
+     export const Joivalidationforproduct = Joi.object({
+      
+        productName: Joi.string().required(),
+        price: Joi.number().required(),
+        quantity: Joi.number().required()
+      })
+
       export default JoivalidationSchema
