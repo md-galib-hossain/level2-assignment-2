@@ -92,10 +92,25 @@ const addNewProductToDB = async (userId : string,product : User["orders"]) =>{
   }
 }
 
+//get all orders for specific user
+const getAllOrdersForSingleUserFromDB = async (userId: string) => {
+  try {
+    if (await UserModel.isUserExists(userId)) {
+      const result = await UserModel.findOne({ userId }).select("orders -_id ");
+      return result;
+    } else {
+      return null;
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+
 export const UserServices = {
   createUserIntoDB,
   getAllUsersFromDB,
   getSingleUserFromDB,
   updateSingleUserFromDB,
-  deleteSingleUserFromDB,addNewProductToDB
+  deleteSingleUserFromDB,addNewProductToDB,getAllOrdersForSingleUserFromDB
 };

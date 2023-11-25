@@ -158,7 +158,6 @@ const deleteSingleUser = async (req: Request, res: Response) => {
 const addSingleProduct = async (req: Request, res: Response) => {
   const { userId } = req.params
   const  product  = req.body
-console.log(product)
   try {
      //validating data using Joi
  const { error } = Joivalidationforproduct.validate(product);
@@ -191,15 +190,40 @@ console.log(product)
   } catch (err) {
     console.log(err);
   }
-
-
-
 }
 
+
+//get all orders from single user
+const getAllOrdersForSingleUser = async (req: Request, res: Response) => {
+  const { userId } = req.params
+  try {
+    const result = await UserServices.getAllOrdersForSingleUserFromDB(userId);
+
+   if (!result) {
+      // If the user is not found then will show message : not found
+      return res.status(500).json({
+        "success": false,
+        "message": "User not found",
+        "error": {
+            "code": 404,
+            "description": "User not found!"
+        }
+    });
+    }
+      
+       res.status(200).json({
+        success: true,
+        message: "Order fetched successfully!",
+        data: result,
+      });
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 export const UserControllers = {
   createUser,
   getAllUsers,
   getSingleUser,
-  updateSingleUser,deleteSingleUser,addSingleProduct
+  updateSingleUser,deleteSingleUser,addSingleProduct,getAllOrdersForSingleUser
 };
