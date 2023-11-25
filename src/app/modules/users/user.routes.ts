@@ -10,4 +10,5 @@ router.put('/users/:userId', UserControllers.updateSingleUser)
 router.delete('/users/:userId', UserControllers.deleteSingleUser)
 router.put('/users/:userId/orders', UserControllers.addSingleProduct)
 router.get('/users/:userId/orders', UserControllers.getAllOrdersForSingleUser)
+router.get('/users/:userId/orders/total-price', UserControllers.calculateAllOrdersForSingleUser)
 export const UserRoutes = router

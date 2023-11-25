@@ -221,9 +221,37 @@ const getAllOrdersForSingleUser = async (req: Request, res: Response) => {
   }
 }
 
+//calculate all orders for single user
+const calculateAllOrdersForSingleUser = async (req: Request, res: Response) => {
+  const { userId } = req.params
+  try {
+    const result = await UserServices.calculateAllOrdersForSingleUserFromDB(userId);
+
+   if (!result) {
+      // If the user is not found then will show message : not found
+      return res.status(500).json({
+        "success": false,
+        "message": "User not found",
+        "error": {
+            "code": 404,
+            "description": "User not found!"
+        }
+    });
+    }
+      
+       res.status(200).json({
+        success: true,
+        message: "Total price calculated successfully!",
+        data: result,
+      });
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 export const UserControllers = {
   createUser,
   getAllUsers,
   getSingleUser,
-  updateSingleUser,deleteSingleUser,addSingleProduct,getAllOrdersForSingleUser
+  updateSingleUser,deleteSingleUser,addSingleProduct,getAllOrdersForSingleUser,calculateAllOrdersForSingleUser
 };

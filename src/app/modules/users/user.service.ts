@@ -35,7 +35,6 @@ const getSingleUserFromDB = async (userId: string) => {
     console.log(err);
   }
 };
-//end getSingleUserFromDB
 
 //updating the user
 const updateSingleUserFromDB = async (userId: string, user : User) => {
@@ -106,11 +105,32 @@ const getAllOrdersForSingleUserFromDB = async (userId: string) => {
   }
 };
 
+//calculate all orders for singleUser
+const calculateAllOrdersForSingleUserFromDB = async (userId: string) => {
+  try {
+    if (await UserModel.isUserExists(userId)) {
+      const user = await UserModel.findOne({ userId });
+      
+      if (user) {
+        const totalPrice = user.orders ? user.orders.reduce((sum, order) => sum + (order.price * order.quantity), 0) : 0;
+        
+        return {"totalPrice": totalPrice};
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 
 export const UserServices = {
   createUserIntoDB,
   getAllUsersFromDB,
   getSingleUserFromDB,
   updateSingleUserFromDB,
-  deleteSingleUserFromDB,addNewProductToDB,getAllOrdersForSingleUserFromDB
+  deleteSingleUserFromDB,addNewProductToDB,getAllOrdersForSingleUserFromDB,calculateAllOrdersForSingleUserFromDB
 };
